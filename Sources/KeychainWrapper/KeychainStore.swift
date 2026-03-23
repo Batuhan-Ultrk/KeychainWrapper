@@ -26,9 +26,9 @@ import Foundation
 ///
 /// This class should not be instantiated directly.
 /// Use `KeychainStore.shared` instead.
-final class KeychainStore: KeychainWrapperStoring {
+public final class KeychainStore: KeychainWrapperStoring {
   
-    @MainActor static let shared = KeychainStore()
+    @MainActor public static let shared = KeychainStore()
 
     private let service: String
     private let config: KeychainWrapperConfiguration
@@ -39,7 +39,7 @@ final class KeychainStore: KeychainWrapperStoring {
         self.config = config
     }
 
-     func set<T: Codable>(_ value: T?, key: String, encoder: JSONEncoder = .init()) throws {
+    public func set<T: Codable>(_ value: T?, key: String, encoder: JSONEncoder = .init()) throws {
         guard let value else {
             throw KeychainWrapperError(errorType: .badData)
         }
@@ -51,7 +51,7 @@ final class KeychainStore: KeychainWrapperStoring {
         }
     }
 
-     func get<T: Codable>(_ type: T.Type, key: String, decoder: JSONDecoder = .init()) throws -> T {
+    public func get<T: Codable>(_ type: T.Type, key: String, decoder: JSONDecoder = .init()) throws -> T {
         let data = try readData(account: key)
         do {
             return try decoder.decode(T.self, from: data)
@@ -60,7 +60,7 @@ final class KeychainStore: KeychainWrapperStoring {
         }
     }
 
-    func deleteItem(forKey key: String) throws {
+    public func deleteItem(forKey key: String) throws {
         let status = SecItemDelete(baseQuery(account: key) as CFDictionary)
 
         switch status {
@@ -75,7 +75,7 @@ final class KeychainStore: KeychainWrapperStoring {
         }
     }
 
-    func existsItem(forKey key: String) -> Bool {
+    public func existsItem(forKey key: String) -> Bool {
         var q = baseQuery(account: key)
         q[kSecReturnAttributes as String] = true
         q[kSecMatchLimit as String] = kSecMatchLimitOne
